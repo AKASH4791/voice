@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#101614">
-  <meta name="description" content="VoiceShift AI calling interface prototype">
+  <meta name="description" content="Browser-to-browser voice calls with normal microphone audio">
   <title>VoiceShift AI</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -250,6 +250,13 @@
     .phone-pair { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
     .phone-card .primary-button { width: 100%; }
     .inline-status { min-height: 16px; margin: 9px 0 0; color: #ffad9a; font-size: 11px; }
+    .inline-status.connected { color: var(--mint); }
+    .room-link-row { display: flex; gap: 8px; }
+    .room-link-row .phone-input { min-width: 0; flex: 1; }
+    .room-link-row button { flex: 0 0 auto; }
+    .room-actions { display: flex; gap: 9px; }
+    .room-actions > button { flex: 1 1 0; }
+    .remote-audio { display: none; }
     .voice-mini { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 13px; border: 1px solid rgba(182, 243, 107, .16); border-radius: 10px; background: rgba(182, 243, 107, .045); }
     .voice-mini strong { display: block; font-size: 12px; }
     .voice-mini span { display: block; margin-top: 4px; color: var(--muted); font-size: 10px; }
@@ -308,36 +315,8 @@
     .switch input:checked + span::before { background: var(--lime); transform: translateX(15px); }
     .mobile-nav { display: none; }
 
-    .call-overlay { position: fixed; z-index: 10; inset: 0; display: grid; padding: 18px; place-items: center; background: rgba(5, 9, 7, .82); backdrop-filter: blur(15px); animation: fade-in .2s ease both; }
-    .call-panel { position: relative; width: min(100%, 470px); overflow: hidden; padding: 27px; border: 1px solid rgba(210, 237, 214, .15); border-radius: 19px; background: radial-gradient(ellipse at 50% 28%, rgba(99, 155, 104, .22), transparent 43%), #18211d; box-shadow: 0 30px 100px rgba(0, 0, 0, .5); text-align: center; }
-    .call-topline { display: flex; align-items: center; justify-content: space-between; color: var(--muted); font-size: 10px; }
-    .call-topline button { display: grid; width: 32px; height: 32px; place-items: center; border: 1px solid var(--line); border-radius: 9px; color: #b8c5bc; background: transparent; cursor: pointer; }
-    .call-topline .icon { width: 16px; height: 16px; }
-    .call-orb-wrap { display: grid; height: 200px; margin: 17px 0 3px; place-items: center; }
-    .call-orb { position: relative; display: grid; width: 140px; height: 140px; place-items: center; border: 1px solid rgba(182, 243, 107, .5); border-radius: 50%; color: #172016; background: linear-gradient(145deg, #d4ff9f, #93df70); box-shadow: 0 0 50px rgba(182, 243, 107, .2); animation: breathe 2.2s ease-in-out infinite; }
-    .call-orb::before, .call-orb::after { position: absolute; inset: -14px; border: 1px solid rgba(182, 243, 107, .22); border-radius: 50%; content: ""; animation: pulse-ring 2.6s ease-out infinite; }
-    .call-orb::after { inset: -29px; animation-delay: .7s; }
-    .call-orb .icon { width: 39px; height: 39px; }
-    .call-name { margin: 0; font: 700 23px var(--font-display); }
-    .call-number { margin: 7px 0 13px; color: #a6b5aa; font-size: 13px; }
-    .call-status { color: var(--lime); font-size: 11px; font-weight: 700; }
-    .call-timer { margin: 5px 0 0; color: #dae5dc; font: 600 14px var(--font-display); font-variant-numeric: tabular-nums; }
-    .selected-voice-line { margin: 18px 0 0; padding-top: 15px; border-top: 1px solid var(--line); color: #a8b6ac; font-size: 11px; }
-    .selected-voice-line strong { color: #e2ebe4; }
-    .waveform { display: flex; height: 35px; align-items: center; justify-content: center; gap: 4px; margin: 11px 0; }
-    .waveform i { width: 3px; height: var(--bar, 9px); border-radius: 4px; background: var(--mint); opacity: .72; animation: wave 1s ease-in-out infinite alternate; animation-delay: var(--delay, 0s); }
-    .call-controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 19px 0 16px; }
-    .control-button { display: grid; min-height: 66px; align-content: center; justify-items: center; gap: 7px; border: 1px solid var(--line); border-radius: 11px; color: #c5d1c8; background: rgba(255, 255, 255, .035); font-size: 9px; cursor: pointer; transition: border-color .2s, background .2s, color .2s; }
-    .control-button .icon { width: 19px; height: 19px; }
-    .control-button[aria-pressed="true"] { border-color: rgba(182, 243, 107, .45); color: var(--lime); background: rgba(182, 243, 107, .09); }
-    .call-panel > .danger-button { width: 100%; min-height: 45px; }
-    .call-disclaimer { margin: 12px 0 0; color: #78877e; font-size: 9px; line-height: 1.5; }
     .toast { position: fixed; z-index: 30; right: 22px; bottom: 22px; max-width: min(360px, calc(100vw - 44px)); padding: 13px 16px; border: 1px solid rgba(182, 243, 107, .2); border-radius: 10px; color: #e5efe7; background: #26342b; box-shadow: 0 12px 30px rgba(0, 0, 0, .3); font-size: 12px; animation: rise-in .25s ease both; }
     @keyframes rise-in { from { opacity: 0; transform: translateY(9px); } to { opacity: 1; transform: translateY(0); } }
-    @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
-    @keyframes breathe { 50% { transform: scale(1.045); box-shadow: 0 0 65px rgba(182, 243, 107, .29); } }
-    @keyframes pulse-ring { 0% { opacity: .8; transform: scale(.92); } 100% { opacity: 0; transform: scale(1.23); } }
-    @keyframes wave { to { transform: scaleY(.45); opacity: .42; } }
     @media (max-width: 980px) {
       .app-shell { grid-template-columns: 205px minmax(0, 1fr); }
       .content { padding: 28px 25px 55px; }
@@ -406,13 +385,10 @@
         .mobile-nav { position: fixed; z-index: 5; right: 0; bottom: 0; left: 0; display: grid; grid-template-columns: repeat(4, 1fr); padding: 7px 5px max(7px, env(safe-area-inset-bottom)); border-top: 1px solid var(--line); background: rgba(15, 22, 19, .94); backdrop-filter: blur(18px); }
       .mobile-nav .nav-item { min-height: 47px; flex-direction: column; justify-content: center; gap: 3px; padding: 3px 0; border-radius: 7px; font-size: 8px; }
       .mobile-nav .nav-item .icon { width: 17px; height: 17px; }
-      .call-panel { padding: 20px; }
     }
     @media (max-width: 380px) {
       .voice-grid { grid-template-columns: 1fr; }
       .voice-actions button { font-size: 10px; }
-      .call-controls { gap: 6px; }
-      .control-button { min-height: 60px; }
     }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
@@ -444,17 +420,17 @@
       <section class="login-story" aria-label="VoiceShift AI introduction">
         <div class="brand"><span class="brand-mark"><svg><use href="#i-wave"/></svg></span>VoiceShift AI</div>
         <div class="story-copy">
-          <p class="eyebrow">A new voice for every conversation</p>
-          <h1>Sound like<br>yourself. Reimagined.</h1>
-          <p>Choose a natural-sounding fictional voice and shape your calling experience.</p>
+          <p class="eyebrow">A call with someone, wherever they are</p>
+          <h1>Talk naturally.<br>Connect directly.</h1>
+          <p>Start a browser call with a link. Your voice stays your normal microphone audio.</p>
         </div>
-        <div class="story-footer"><span class="status-dot"></span> Privacy-first voice experiences</div>
+        <div class="story-footer"><span class="status-dot"></span> Microphone access only when you join</div>
       </section>
       <section class="login-panel">
         <form id="loginForm" class="login-form">
           <p class="eyebrow">Welcome back</p>
           <h2>Sign in to continue</h2>
-          <p class="intro">Your voice studio is ready when you are.</p>
+          <p class="intro">Start a live call or join someone else's invite.</p>
           <div class="field">
             <label for="loginPhone">Phone number</label>
             <div class="input-wrap"><span class="icon"><svg><use href="#i-phone"/></svg></span><input class="with-icon" id="loginPhone" type="tel" autocomplete="tel" placeholder="+1 (555) 000-0000" required></div>
@@ -468,7 +444,7 @@
             <a class="text-link" href="#" id="forgotLink">Forgot password?</a>
           </div>
           <button class="primary-button" type="submit">Log in <span class="icon"><svg><use href="#i-arrow"/></svg></span></button>
-          <p class="login-note">No account needed? <a href="#" class="text-link" id="guestLink">Continue as guest</a><br><br>Prototype only. No account or call is created.</p>
+          <p class="login-note">No account needed? <a href="#" class="text-link" id="guestLink">Continue as guest</a><br><br>Sign-in is a local demo. Join shared call links without an account.</p>
         </form>
       </section>
     </div>
@@ -485,7 +461,7 @@
         <button class="nav-item" data-section="settings"><span class="icon"><svg><use href="#i-settings"/></svg></span>Settings</button>
       </nav>
       <div class="sidebar-bottom">
-        <div class="plan-box"><strong>Prototype workspace</strong><p>Calling and AI voice services are not connected.</p></div>
+        <div class="plan-box"><strong>Browser calling</strong><p>Live audio connects directly between people who join the same room.</p></div>
         <div class="user-row"><div class="avatar" id="userAvatar">VS</div><div><div class="user-name" id="userName">VoiceShift User</div><div class="user-meta">Personal workspace</div></div></div>
       </div>
     </aside>
@@ -493,26 +469,26 @@
       <header class="topbar">
         <div class="brand"><span class="brand-mark"><svg><use href="#i-wave"/></svg></span>VoiceShift AI</div>
         <div class="breadcrumb"><strong>Workspace</strong> &nbsp;/&nbsp; <span id="breadcrumbName">Dashboard</span></div>
-        <div class="top-actions"><span class="prototype-chip"><span class="status-dot"></span> Prototype mode</span></div>
+        <div class="top-actions"><span class="prototype-chip"><span class="status-dot"></span> Direct browser calls</span></div>
       </header>
       <div class="content">
         <section id="section-dashboard" class="page-section active">
           <div class="welcome-banner glass-card">
-            <div><p class="eyebrow">Your voice studio</p><h1>Welcome to VoiceShift AI</h1><p>Make every call feel a little more like you.</p></div>
-            <button class="primary-button banner-action" data-go="voices">Choose a voice <span class="icon"><svg><use href="#i-arrow"/></svg></span></button>
+            <div><p class="eyebrow">Talk in real time</p><h1>Welcome to VoiceShift AI</h1><p>Start a browser call and invite someone with a private link.</p></div>
           </div>
           <div class="stats-grid">
-            <article class="stat-card glass-card"><span class="stat-icon"><span class="icon"><svg><use href="#i-clock"/></svg></span></span><div><div class="stat-label">Calls this month</div><div class="stat-value" id="callCount">0</div></div></article>
-            <article class="stat-card glass-card"><span class="stat-icon mint"><span class="icon"><svg><use href="#i-wave"/></svg></span></span><div><div class="stat-label">Selected voice</div><div class="stat-value" id="statVoice" style="font-size:15px">Natural Female</div></div></article>
+            <article class="stat-card glass-card"><span class="stat-icon"><span class="icon"><svg><use href="#i-mic"/></svg></span></span><div><div class="stat-label">Call status</div><div class="stat-value" id="callCount">Ready</div></div></article>
+            <article class="stat-card glass-card"><span class="stat-icon mint"><span class="icon"><svg><use href="#i-speaker"/></svg></span></span><div><div class="stat-label">Call audio</div><div class="stat-value" id="statVoice" style="font-size:15px">Normal</div></div></article>
           </div>
           <div class="dashboard-grid">
             <section class="phone-card glass-card">
-              <div class="card-heading"><span class="stat-icon"><span class="icon"><svg><use href="#i-phone"/></svg></span></span><div><h2>Join a call</h2><p>Enter a number, choose a voice, and start the demo.</p></div></div>
-              <div class="field"><label for="recipientNumber">Phone number</label><input class="phone-input" id="recipientNumber" type="tel" placeholder="+1 555 012 3456" autocomplete="tel" required></div>
-              <div class="field"><label for="callVoiceSelect">Choose a voice</label><select class="phone-input" id="callVoiceSelect"><option value="Natural Female">Natural Female · Age 30-44</option><option value="Young Female">Young Female · Age 21-29</option><option value="Professional Female">Professional Female · Age 35-50</option><option value="Natural Male">Natural Male · Age 30-44</option><option value="Young Male">Young Male · Age 21-29</option><option value="Professional Male">Professional Male · Age 35-50</option></select></div>
-              <p class="field-help">Demo only. Real calls require a telephony provider; this prototype never places calls.</p>
-              <button class="primary-button" id="callButton" type="button"><span class="icon"><svg><use href="#i-phone"/></svg></span> Join call</button>
-              <p id="callFormStatus" class="inline-status" aria-live="polite"></p>
+              <div class="card-heading"><span class="stat-icon"><span class="icon"><svg><use href="#i-mic"/></svg></span></span><div><h2>Browser call</h2><p>Create a call room or join someone else's invite.</p></div></div>
+              <p class="field-help">Calls use your normal microphone audio. Both people must open the invite and allow microphone access. Anyone with the invite link can join, so share it privately.</p>
+              <div id="roomInvite" class="field hidden"><label for="roomLink">Private invite link</label><div class="room-link-row"><input class="phone-input" id="roomLink" type="url" readonly><button class="quiet-button" id="copyInviteButton" type="button">Copy</button></div></div>
+              <div class="room-actions"><button class="primary-button" id="createRoomButton" type="button"><span class="icon"><svg><use href="#i-phone"/></svg></span> Start a call</button><button class="secondary-button hidden" id="joinRoomButton" type="button"><span class="icon"><svg><use href="#i-phone"/></svg></span> Join call</button></div>
+              <p id="roomStatus" class="inline-status" aria-live="polite">Start a room or open an invite link to join.</p>
+              <div class="room-actions"><button class="quiet-button hidden" id="muteMicButton" type="button" aria-pressed="false">Mute microphone</button><button class="danger-button hidden" id="endBrowserCallButton" type="button">End call</button></div>
+              <audio id="remoteAudio" class="remote-audio" autoplay playsinline></audio>
             </section>
           </div>
           <section class="voices-section">
@@ -529,17 +505,17 @@
         </section>
 
         <section id="section-history" class="page-section">
-          <div class="page-heading"><div><p class="eyebrow">Recent activity</p><h1>Call history</h1><p>Your calls will appear here once telephony is connected.</p></div></div>
-          <div class="history-card glass-card" id="historyList"><div class="history-row header"><span>Contact</span><span>Voice</span><span>Duration</span><span>Status</span></div><div id="historyEmpty" class="empty-state">No calls yet. Your simulated calls will be listed here.</div></div>
+          <div class="page-heading"><div><p class="eyebrow">Recent activity</p><h1>Call history</h1><p>Calls are not stored by this site.</p></div></div>
+          <div class="history-card glass-card" id="historyList"><div class="empty-state">Call history is not saved.</div></div>
         </section>
 
         <section id="section-settings" class="page-section">
           <div class="page-heading"><div><p class="eyebrow">Your preferences</p><h1>Settings</h1><p>Manage your prototype workspace preferences.</p></div></div>
           <div class="settings-grid">
             <section class="settings-card glass-card"><div class="card-heading"><span class="stat-icon"><span class="icon"><svg><use href="#i-user"/></svg></span></span><div><h2>Account</h2><p>Profile and sign-in preferences.</p></div></div><div class="setting-row"><div><strong>Phone number</strong><small id="settingsPhone">Not provided</small></div><span class="verified">Demo profile</span></div><div class="setting-row"><div><strong>Remember this device</strong><small>Keep your session preference on this device.</small></div><label class="switch"><input id="rememberSetting" type="checkbox"><span></span></label></div></section>
-            <section class="settings-card glass-card"><div class="card-heading"><span class="stat-icon coral"><span class="icon"><svg><use href="#i-settings"/></svg></span></span><div><h2>Calling preferences</h2><p>These controls are saved only in this page.</p></div></div><div class="setting-row"><div><strong>Voice effects</strong><small>Enable the selected fictional voice in a connected call.</small></div><label class="switch"><input id="effectsSetting" type="checkbox" checked><span></span></label></div><div class="setting-row"><div><strong>Call notifications</strong><small>Show call status updates in the prototype.</small></div><label class="switch"><input id="notificationsSetting" type="checkbox" checked><span></span></label></div></section>
+            <section class="settings-card glass-card"><div class="card-heading"><span class="stat-icon coral"><span class="icon"><svg><use href="#i-settings"/></svg></span></span><div><h2>Calling preferences</h2><p>Voice effects are not applied to browser calls.</p></div></div><div class="setting-row"><div><strong>Call audio</strong><small>Your microphone audio is sent without voice-changing effects.</small></div><span class="verified">Normal voice</span></div><div class="setting-row"><div><strong>Microphone access</strong><small>Requested only when you start or join a call.</small></div><span class="verified">Per call</span></div></section>
           </div>
-          <div class="notice"><span class="icon"><svg><use href="#i-alert"/></svg></span><span>Real phone calls, microphone access, real-time voice conversion, telephony provider integration, AI voice-generation/conversion API, call routing, and secure account authentication are not implemented.</span></div>
+          <div class="notice"><span class="icon"><svg><use href="#i-alert"/></svg></span><span>Calls connect browser-to-browser using PeerJS signaling and WebRTC audio. There is no phone-number calling, account authentication, call recording, or AI voice conversion.</span></div>
         </section>
       </div>
     </div>
@@ -551,28 +527,9 @@
     </nav>
   </div>
 
-  <div id="callOverlay" class="call-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="callTitle">
-    <section class="call-panel">
-      <div class="call-topline"><span>OUTGOING CALL · PROTOTYPE</span><button id="closeCall" type="button" aria-label="Close call screen"><span class="icon"><svg><use href="#i-close"/></svg></span></button></div>
-      <div class="call-orb-wrap"><div class="call-orb"><span class="icon"><svg><use href="#i-mic"/></svg></span></div></div>
-      <h2 class="call-name" id="callTitle">Demo call</h2>
-      <p class="call-number" id="callRecipient">+1 555 012 3456</p>
-      <div class="call-status" id="callStatus">Connecting...</div>
-      <div class="call-timer" id="callTimer">00:00</div>
-      <div class="selected-voice-line">Selected AI voice: <strong id="callVoice">Natural Female</strong></div>
-      <div class="waveform" aria-label="Animated call waveform"></div>
-      <div class="call-controls">
-        <button class="control-button" type="button" data-toggle="microphone" aria-pressed="false"><span class="icon"><svg><use href="#i-mic"/></svg></span><span>Microphone</span></button>
-        <button class="control-button" type="button" data-toggle="mute" aria-pressed="false"><span class="icon"><svg><use href="#i-mute"/></svg></span><span>Mute</span></button>
-        <button class="control-button" type="button" data-toggle="speaker" aria-pressed="false"><span class="icon"><svg><use href="#i-speaker"/></svg></span><span>Speaker</span></button>
-        <button class="control-button" type="button" data-toggle="voice" aria-pressed="true"><span class="icon"><svg><use href="#i-wave"/></svg></span><span>Voice ON</span></button>
-      </div>
-      <button class="danger-button" id="endCall" type="button"><span class="icon"><svg><use href="#i-phone"/></svg></span> End Call</button>
-      <p class="call-disclaimer">Simulation only. No phone call is placed and no microphone is accessed.</p>
-    </section>
-  </div>
   <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
 
+  <script src="https://unpkg.com/peerjs@1.5.5/dist/peerjs.min.js" defer></script>
   <script>
     const voiceOptions = [
       { name: "Natural Female", gender: "Female", age: "30-44", group: "Female Voice", bars: [8, 14, 10, 20, 13, 9, 17, 12] },
@@ -583,11 +540,14 @@
       { name: "Professional Male", gender: "Male", age: "35-50", group: "Male Voice", bars: [17, 11, 8, 19, 12, 16, 9, 14] }
     ];
     let selectedVoice = voiceOptions[0];
-    let callStartedAt = 0;
-    let timerHandle = null;
-    let statusHandle = null;
     let toastHandle = null;
-    let callCount = 0;
+    let pendingRoomId = new URLSearchParams(window.location.hash.slice(1)).get("room");
+    let peer = null;
+    let localStream = null;
+    let activeCall = null;
+    let callStartedAt = 0;
+    let callTimer = null;
+    let roomRole = "";
 
     function voiceCard(voice, compact = false) {
       const active = voice.name === selectedVoice.name;
@@ -605,9 +565,6 @@
         const icon = group === "Female Voice" ? "♀" : "♂";
         return `<div class="voice-group"><div class="voice-group-heading"><span class="voice-glyph" aria-hidden="true">${icon}</span>${group}</div><div class="voice-grid">${voiceOptions.filter((voice) => voice.group === group).map((voice) => voiceCard(voice)).join("")}</div></div>`;
       }).join("");
-      document.getElementById("statVoice").textContent = selectedVoice.name;
-      document.getElementById("callVoice").textContent = selectedVoice.name;
-      document.getElementById("callVoiceSelect").value = selectedVoice.name;
     }
 
     function showToast(message) {
@@ -632,54 +589,209 @@
       return `${minutes}:${remainder}`;
     }
 
-    function addHistory(number, duration) {
-      const list = document.getElementById("historyList");
-      document.getElementById("historyEmpty")?.remove();
-      const row = document.createElement("div");
-      row.className = "history-row";
-      row.innerHTML = `<span class="history-person"><span class="avatar">${number.slice(-2)}</span><span>${number}<small>Today · Demo</small></span></span><span class="call-type">${selectedVoice.name}</span><span class="duration">${duration}</span><span class="call-state">Simulated</span>`;
-      list.append(row);
+    function setCallStatus(message, connected = false) {
+      const status = document.getElementById("roomStatus");
+      status.textContent = message;
+      status.classList.toggle("connected", connected);
+      const summary = document.getElementById("callCount");
+      summary.textContent = message.startsWith("Connected") ? "Live" : activeCall ? "Connecting" : peer || localStream ? "Room open" : message.startsWith("Requesting") ? "Connecting" : "Ready";
     }
 
-    function finishCall() {
-      if (timerHandle) clearInterval(timerHandle);
-      if (statusHandle) clearTimeout(statusHandle);
-      const overlay = document.getElementById("callOverlay");
-      if (!overlay.classList.contains("hidden")) {
-        const number = document.getElementById("callRecipient").textContent;
-        const duration = formatTime(Math.floor((Date.now() - callStartedAt) / 1000));
-        addHistory(number, duration);
-        callCount += 1;
-        document.getElementById("callCount").textContent = callCount;
+    function updateCallControls() {
+      const busy = Boolean(peer || localStream);
+      document.getElementById("createRoomButton").classList.toggle("hidden", busy || Boolean(pendingRoomId));
+      document.getElementById("joinRoomButton").classList.toggle("hidden", busy || !pendingRoomId);
+      document.getElementById("endBrowserCallButton").classList.toggle("hidden", !busy);
+      document.getElementById("muteMicButton").classList.toggle("hidden", !localStream);
+    }
+
+    function microphoneErrorMessage(error) {
+      if (error.name === "NotAllowedError" || error.name === "PermissionDeniedError") return "Microphone access was denied. Allow it in your browser to join.";
+      if (error.name === "NotFoundError" || error.name === "DevicesNotFoundError") return "No microphone was found on this device.";
+      if (error.name === "UnavailableError") return "Microphone calls require a supported browser on HTTPS.";
+      return "Could not access the microphone. Check browser permissions and try again.";
+    }
+
+    async function requestMicrophone() {
+      if (!navigator.mediaDevices?.getUserMedia) {
+        const error = new Error("Microphone access requires HTTPS and a supported browser.");
+        error.name = "UnavailableError";
+        throw error;
       }
-      overlay.classList.add("hidden");
-      document.getElementById("callFormStatus").textContent = "";
-      document.querySelectorAll(".control-button").forEach((button) => {
-        button.setAttribute("aria-pressed", button.dataset.toggle === "voice" ? "true" : "false");
-        if (button.dataset.toggle === "voice") button.lastElementChild.textContent = "Voice ON";
+      return navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    }
+
+    function updateInviteUrl(roomId) {
+      const url = new URL(window.location.href);
+      url.hash = roomId ? `room=${encodeURIComponent(roomId)}` : "";
+      window.history.replaceState(null, "", url);
+      if (roomId) {
+        document.getElementById("roomLink").value = url.href;
+        document.getElementById("roomInvite").classList.remove("hidden");
+      } else {
+        document.getElementById("roomInvite").classList.add("hidden");
+      }
+    }
+
+    function endBrowserCall(message) {
+      const call = activeCall;
+      const currentPeer = peer;
+      activeCall = null;
+      peer = null;
+      if (call) call.close();
+      if (currentPeer) currentPeer.destroy();
+      if (localStream) localStream.getTracks().forEach((track) => track.stop());
+      localStream = null;
+      document.getElementById("remoteAudio").srcObject = null;
+      if (callTimer) clearInterval(callTimer);
+      callTimer = null;
+      const muteButton = document.getElementById("muteMicButton");
+      muteButton.textContent = "Mute microphone";
+      muteButton.setAttribute("aria-pressed", "false");
+      if (roomRole === "host") {
+        pendingRoomId = null;
+        updateInviteUrl("");
+      }
+      roomRole = "";
+      document.getElementById("createRoomButton").disabled = false;
+      document.getElementById("joinRoomButton").disabled = false;
+      updateCallControls();
+      setCallStatus(message);
+    }
+
+    function watchCall(call) {
+      activeCall = call;
+      call.on("stream", (remoteStream) => {
+        const remoteAudio = document.getElementById("remoteAudio");
+        remoteAudio.srcObject = remoteStream;
+        remoteAudio.play().catch(() => setCallStatus("Connected. Tap the page to enable call audio.", true));
+        callStartedAt = Date.now();
+        if (callTimer) clearInterval(callTimer);
+        setCallStatus("Connected · 00:00", true);
+        callTimer = setInterval(() => {
+          setCallStatus(`Connected · ${formatTime(Math.floor((Date.now() - callStartedAt) / 1000))}`, true);
+        }, 1000);
+      });
+      call.on("close", () => {
+        if (activeCall === call) endBrowserCall("The other person ended the call.");
+      });
+      call.on("error", () => {
+        if (activeCall === call) endBrowserCall("The call connection ended. You can try again.");
       });
     }
 
-    function startCall() {
-      const recipient = document.getElementById("recipientNumber").value.trim();
-      const status = document.getElementById("callFormStatus");
-      if (!recipient) {
-        status.textContent = "Enter a phone number to join the demo call.";
+    function handlePeerError(error) {
+      const message = error.type === "peer-unavailable"
+        ? "That call room is not online. Ask the caller to create a new link."
+        : "The call service could not connect. Check your internet and try again.";
+      endBrowserCall(message);
+    }
+
+    async function createCallRoom() {
+      const createButton = document.getElementById("createRoomButton");
+      createButton.disabled = true;
+      setCallStatus("Requesting microphone access...");
+      try {
+        localStream = await requestMicrophone();
+      } catch (error) {
+        createButton.disabled = false;
+        setCallStatus(microphoneErrorMessage(error));
         return;
       }
-      status.textContent = "";
-      document.getElementById("callRecipient").textContent = recipient;
-      document.getElementById("callStatus").textContent = "Connecting...";
-      document.getElementById("callTimer").textContent = "00:00";
-      document.getElementById("callOverlay").classList.remove("hidden");
-      callStartedAt = Date.now();
-      timerHandle = setInterval(() => {
-        document.getElementById("callTimer").textContent = formatTime(Math.floor((Date.now() - callStartedAt) / 1000));
-      }, 1000);
-      statusHandle = setTimeout(() => {
-        document.getElementById("callStatus").textContent = "Demo call in progress";
-      }, 1200);
+      if (!window.Peer) {
+        endBrowserCall("The call service did not load. Refresh the page and try again.");
+        return;
+      }
+      updateCallControls();
+      try {
+        peer = new Peer();
+      } catch {
+        endBrowserCall("The call service could not start. Refresh the page and try again.");
+        return;
+      }
+      roomRole = "host";
+      peer.on("open", (roomId) => {
+        pendingRoomId = roomId;
+        updateInviteUrl(roomId);
+        updateCallControls();
+        setCallStatus("Room ready. Copy the link and send it privately.", true);
+      });
+      peer.on("call", (incomingCall) => {
+        if (activeCall) {
+          incomingCall.close();
+          return;
+        }
+        watchCall(incomingCall);
+        incomingCall.answer(localStream);
+        setCallStatus("Connecting to the other person...");
+      });
+      peer.on("error", handlePeerError);
+      updateCallControls();
+      document.getElementById("endBrowserCallButton").classList.remove("hidden");
+      setCallStatus("Connecting to the call service...");
     }
+
+    async function joinCallRoom() {
+      if (!pendingRoomId) return;
+      const joinButton = document.getElementById("joinRoomButton");
+      joinButton.disabled = true;
+      setCallStatus("Requesting microphone access...");
+      try {
+        localStream = await requestMicrophone();
+      } catch (error) {
+        joinButton.disabled = false;
+        setCallStatus(microphoneErrorMessage(error));
+        return;
+      }
+      if (!window.Peer) {
+        endBrowserCall("The call service did not load. Refresh the page and try again.");
+        return;
+      }
+      updateCallControls();
+      try {
+        peer = new Peer();
+      } catch {
+        endBrowserCall("The call service could not start. Refresh the page and try again.");
+        return;
+      }
+      roomRole = "guest";
+      peer.on("open", () => {
+        const outgoingCall = peer.call(pendingRoomId, localStream);
+        if (!outgoingCall) {
+          endBrowserCall("Could not reach that call room. Check the invite link.");
+          return;
+        }
+        watchCall(outgoingCall);
+        setCallStatus("Calling the room...");
+      });
+      peer.on("error", handlePeerError);
+      updateCallControls();
+      document.getElementById("endBrowserCallButton").classList.remove("hidden");
+    }
+
+    document.getElementById("createRoomButton").addEventListener("click", createCallRoom);
+    document.getElementById("joinRoomButton").addEventListener("click", joinCallRoom);
+    document.getElementById("endBrowserCallButton").addEventListener("click", () => endBrowserCall("Call ended."));
+    document.getElementById("muteMicButton").addEventListener("click", (event) => {
+      if (!localStream) return;
+      const muted = localStream.getAudioTracks().every((track) => !track.enabled);
+      localStream.getAudioTracks().forEach((track) => { track.enabled = muted; });
+      event.currentTarget.textContent = muted ? "Mute microphone" : "Unmute microphone";
+      event.currentTarget.setAttribute("aria-pressed", String(!muted));
+    });
+    document.getElementById("copyInviteButton").addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(document.getElementById("roomLink").value);
+        showToast("Invite link copied.");
+      } catch {
+        document.getElementById("roomLink").select();
+        setCallStatus("Copy was blocked. Select and copy the invite link manually.");
+      }
+    });
+    window.addEventListener("beforeunload", () => {
+      if (peer) peer.destroy();
+      if (localStream) localStream.getTracks().forEach((track) => track.stop());
+    });
 
     renderVoices();
     document.querySelectorAll("[data-section]").forEach((item) => item.addEventListener("click", () => navigate(item.dataset.section)));
@@ -710,25 +822,15 @@
     });
     document.getElementById("guestLink").addEventListener("click", (event) => { event.preventDefault(); enterWorkspace(); });
     document.getElementById("forgotLink").addEventListener("click", (event) => { event.preventDefault(); showToast("Password recovery requires a secure backend and is not available in this prototype."); });
-    document.getElementById("callButton").addEventListener("click", startCall);
-    document.getElementById("callVoiceSelect").addEventListener("change", (event) => {
-      selectedVoice = voiceOptions.find((voice) => voice.name === event.target.value);
-      renderVoices();
-    });
-    document.getElementById("closeCall").addEventListener("click", finishCall);
-    document.getElementById("endCall").addEventListener("click", finishCall);
     document.getElementById("realismRange").addEventListener("input", (event) => { document.getElementById("realismValue").textContent = `${event.target.value}%`; });
     document.getElementById("rememberSetting").addEventListener("change", (event) => { document.getElementById("rememberMe").checked = event.target.checked; });
     document.getElementById("rememberMe").addEventListener("change", (event) => { document.getElementById("rememberSetting").checked = event.target.checked; });
-    document.querySelectorAll(".control-button").forEach((button) => button.addEventListener("click", () => {
-      const pressed = button.getAttribute("aria-pressed") !== "true";
-      button.setAttribute("aria-pressed", String(pressed));
-      if (button.dataset.toggle === "voice") button.lastElementChild.textContent = pressed ? "Voice ON" : "Voice OFF";
-      showToast(`${button.lastElementChild.textContent} · Demo control only`);
-    }));
-    document.getElementById("callOverlay").addEventListener("click", (event) => { if (event.target.id === "callOverlay") finishCall(); });
-    document.addEventListener("keydown", (event) => { if (event.key === "Escape" && !document.getElementById("callOverlay").classList.contains("hidden")) finishCall(); });
-    document.querySelector(".waveform").innerHTML = Array.from({ length: 29 }, (_, index) => `<i style="--bar:${8 + (index * 17 % 21)}px;--delay:${index * .045}s"></i>`).join("");
+    if (pendingRoomId) {
+      document.getElementById("createRoomButton").classList.add("hidden");
+      document.getElementById("joinRoomButton").classList.remove("hidden");
+      enterWorkspace();
+      setCallStatus("Invite received. Join when you are ready.");
+    }
   </script>
 </body>
 </html>

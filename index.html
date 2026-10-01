@@ -418,39 +418,7 @@
     <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/><path d="m9 12 2 2 4-4"/></symbol>
   </svg>
 
-  <main id="loginScreen" class="login-screen">
-    <div class="login-layout">
-      <section class="login-story" aria-label="VoiceShift AI introduction">
-        <div class="brand"><span class="brand-mark"><svg><use href="#i-wave"/></svg></span>VoiceShift AI</div>
-        <div class="story-copy">
-          <p class="eyebrow">A call with someone, wherever they are</p>
-          <h1>Talk naturally.<br>Connect directly.</h1>
-          <p>Start a browser call with a link. Your voice stays your normal microphone audio.</p>
-        </div>
-        <div class="story-footer"><span class="status-dot"></span> Microphone access only when you join</div>
-      </section>
-      <section class="login-panel">
-        <form id="loginForm" class="login-form">
-          <p class="eyebrow">Welcome to VoiceShift</p>
-          <h2 id="authHeading">Log in</h2>
-          <p class="intro">Create a local profile or return to one saved in this browser.</p>
-          <div class="auth-tabs" role="tablist" aria-label="Profile access">
-            <button class="auth-tab active" id="loginModeButton" type="button" role="tab" aria-selected="true">Log in</button>
-            <button class="auth-tab" id="createModeButton" type="button" role="tab" aria-selected="false">Create account</button>
-          </div>
-          <div class="field">
-            <label for="loginName">Your name</label>
-            <input class="phone-input" id="loginName" type="text" autocomplete="username" maxlength="48" placeholder="Enter your name" required>
-          </div>
-          <button class="primary-button" id="authSubmitButton" type="submit">Log in <span class="icon"><svg><use href="#i-arrow"/></svg></span></button>
-          <p id="authStatus" class="inline-status" aria-live="polite"></p>
-          <p class="login-note">No password or OTP. Profiles are stored only in this browser and are not secure or synced across devices. <a href="#" class="text-link" id="guestLink">Continue as guest</a></p>
-        </form>
-      </section>
-    </div>
-  </main>
-
-  <div id="appShell" class="app-shell hidden">
+  <div id="appShell" class="app-shell">
     <aside class="sidebar">
       <div class="brand"><span class="brand-mark"><svg><use href="#i-wave"/></svg></span>VoiceShift AI</div>
       <p class="nav-label">Workspace</p>
@@ -482,6 +450,14 @@
           </div>
           <div class="dashboard-grid">
             <section class="phone-card glass-card">
+              <div class="card-heading"><span class="stat-icon mint"><span class="icon"><svg><use href="#i-phone"/></svg></span></span><div><h2>Call a phone number</h2><p>Continue through your device's phone app.</p></div></div>
+              <form id="phoneCallForm">
+                <div class="field"><label for="phoneNumberInput">Phone number with country code</label><input class="phone-input" id="phoneNumberInput" type="tel" autocomplete="tel" inputmode="tel" placeholder="+1 555 123 4567" required></div>
+                <button class="primary-button" type="submit"><span class="icon"><svg><use href="#i-phone"/></svg></span> Open phone dialer</button>
+                <p id="phoneCallStatus" class="field-help" aria-live="polite">Your phone handles the call. This site does not request microphone access or save the number.</p>
+              </form>
+            </section>
+            <section class="phone-card glass-card">
               <div class="card-heading"><span class="stat-icon"><span class="icon"><svg><use href="#i-mic"/></svg></span></span><div><h2>Browser call</h2><p>Create a call room or join someone else's invite.</p></div></div>
               <p class="field-help">Calls use your normal microphone audio. Both people must open the invite and allow microphone access. Anyone with the invite link can join, so share it privately.</p>
               <div id="roomInvite" class="field hidden"><label for="roomLink">Private invite link</label><div class="room-link-row"><input class="phone-input" id="roomLink" type="url" readonly><button class="quiet-button" id="copyInviteButton" type="button">Copy</button></div></div>
@@ -512,10 +488,10 @@
         <section id="section-settings" class="page-section">
           <div class="page-heading"><div><p class="eyebrow">Your preferences</p><h1>Settings</h1><p>Manage your prototype workspace preferences.</p></div></div>
           <div class="settings-grid">
-            <section class="settings-card glass-card"><div class="card-heading"><span class="stat-icon"><span class="icon"><svg><use href="#i-user"/></svg></span></span><div><h2>Account</h2><p>Profile saved on this device.</p></div></div><div class="setting-row"><div><strong>Profile name</strong><small id="settingsProfileName">Guest session</small></div><span class="verified">Device only</span></div></section>
-            <section class="settings-card glass-card"><div class="card-heading"><span class="stat-icon coral"><span class="icon"><svg><use href="#i-settings"/></svg></span></span><div><h2>Calling preferences</h2><p>Voice effects are not applied to browser calls.</p></div></div><div class="setting-row"><div><strong>Call audio</strong><small>Your microphone audio is sent without voice-changing effects.</small></div><span class="verified">Normal voice</span></div><div class="setting-row"><div><strong>Microphone access</strong><small>Requested only when you start or join a call.</small></div><span class="verified">Per call</span></div></section>
+            <section class="settings-card glass-card"><div class="card-heading"><span class="stat-icon"><span class="icon"><svg><use href="#i-user"/></svg></span></span><div><h2>Guest session</h2><p>No sign-in or profile storage.</p></div></div><div class="setting-row"><div><strong>Saved information</strong><small>This site does not save your profile, phone number, or call history.</small></div><span class="verified">Not stored</span></div></section>
+            <section class="settings-card glass-card"><div class="card-heading"><span class="stat-icon coral"><span class="icon"><svg><use href="#i-settings"/></svg></span></span><div><h2>Calling preferences</h2><p>Voice conversion is not connected.</p></div></div><div class="setting-row"><div><strong>Browser call audio</strong><small>Uses your normal microphone audio. Voice effects need a connected real-time provider.</small></div><span class="verified">Normal voice</span></div><div class="setting-row"><div><strong>Phone calls</strong><small>Handed off to your device's dialer; this site cannot change carrier-call audio.</small></div><span class="verified">Device dialer</span></div></section>
           </div>
-          <div class="notice"><span class="icon"><svg><use href="#i-alert"/></svg></span><span>Calls connect browser-to-browser using PeerJS signaling and WebRTC audio. Profiles are local only, not secure accounts. Phone-number calling, call recording, and AI voice translation require external services and are not connected.</span></div>
+          <div class="notice"><span class="icon"><svg><use href="#i-alert"/></svg></span><span>Browser rooms use WebRTC and require microphone permission. Phone-number calls open your device dialer. Live male/female voice conversion requires a telephony and voice-processing provider and is not available yet.</span></div>
         </section>
       </div>
     </div>
@@ -541,7 +517,6 @@
     ];
     let selectedVoice = voiceOptions[0];
     let toastHandle = null;
-    let authMode = "login";
     let pendingRoomId = new URLSearchParams(window.location.hash.slice(1)).get("room");
     let peer = null;
     let localStream = null;
@@ -607,7 +582,7 @@
     }
 
     function microphoneErrorMessage(error) {
-      if (error.name === "NotAllowedError" || error.name === "PermissionDeniedError") return "Microphone access was denied. Allow it in your browser to join.";
+      if (error.name === "NotAllowedError" || error.name === "PermissionDeniedError") return "Microphone access was denied. Allow Microphone for this page in your browser settings, then try again.";
       if (error.name === "NotFoundError" || error.name === "DevicesNotFoundError") return "No microphone was found on this device.";
       if (error.name === "UnavailableError") return "Microphone calls require a supported browser on HTTPS.";
       return "Could not access the microphone. Check browser permissions and try again.";
@@ -620,6 +595,13 @@
         throw error;
       }
       return navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+    }
+
+    function canShareCallLink() {
+      const localHosts = ["localhost", "127.0.0.1", "::1", "[::1]"];
+      if (window.location.protocol === "https:" && !localHosts.includes(window.location.hostname)) return true;
+      setCallStatus("To call someone remotely, open the public HTTPS website. Local files and localhost links only work on this device.");
+      return false;
     }
 
     function updateInviteUrl(roomId) {
@@ -689,6 +671,7 @@
     }
 
     async function createCallRoom() {
+      if (!canShareCallLink()) return;
       const createButton = document.getElementById("createRoomButton");
       createButton.disabled = true;
       setCallStatus("Requesting microphone access...");
@@ -734,6 +717,7 @@
 
     async function joinCallRoom() {
       if (!pendingRoomId) return;
+      if (!canShareCallLink()) return;
       const joinButton = document.getElementById("joinRoomButton");
       joinButton.disabled = true;
       setCallStatus("Requesting microphone access...");
@@ -808,71 +792,24 @@
       if (previewButton) showToast(`${previewButton.dataset.preview} preview is a placeholder in this prototype.`);
     });
 
-    function getLocalProfiles() {
-      try {
-        const profiles = JSON.parse(localStorage.getItem("voiceshiftProfiles") || "[]");
-        return Array.isArray(profiles) ? profiles.filter((profile) => profile && typeof profile.name === "string" && typeof profile.key === "string") : [];
-      } catch {
-        return [];
-      }
-    }
-
-    function setAuthMode(mode) {
-      authMode = mode;
-      const isCreate = mode === "create";
-      document.getElementById("authHeading").textContent = isCreate ? "Create account" : "Log in";
-      document.getElementById("authSubmitButton").firstChild.textContent = isCreate ? "Create account " : "Log in ";
-      document.getElementById("loginModeButton").classList.toggle("active", !isCreate);
-      document.getElementById("loginModeButton").setAttribute("aria-selected", String(!isCreate));
-      document.getElementById("createModeButton").classList.toggle("active", isCreate);
-      document.getElementById("createModeButton").setAttribute("aria-selected", String(isCreate));
-      document.getElementById("authStatus").textContent = "";
-    }
-
-    function enterWorkspace(displayName = "") {
-      document.getElementById("loginScreen").classList.add("hidden");
-      document.getElementById("appShell").classList.remove("hidden");
-      document.getElementById("settingsProfileName").textContent = displayName || "Guest session";
-      document.querySelector(".user-name").textContent = displayName || "Guest user";
-      document.getElementById("userAvatar").textContent = displayName ? displayName.split(/\s+/).map((part) => part[0]).join("").slice(0, 2).toUpperCase() : "G";
-      showToast(displayName ? `Welcome, ${displayName}.` : "Continuing as a guest. No account needed.");
-    }
-    document.getElementById("loginForm").addEventListener("submit", (event) => {
+    document.querySelector(".user-name").textContent = "Guest user";
+    document.getElementById("userAvatar").textContent = "G";
+    document.getElementById("phoneCallForm").addEventListener("submit", (event) => {
       event.preventDefault();
-      const name = document.getElementById("loginName").value.trim().replace(/\s+/g, " ");
-      const key = name.toLocaleLowerCase();
-      const status = document.getElementById("authStatus");
-      const profiles = getLocalProfiles();
-      if (authMode === "create") {
-        if (profiles.some((profile) => profile.key === key)) {
-          status.textContent = "A profile with this name already exists in this browser. Log in instead.";
-          return;
-        }
-        profiles.push({ name, key });
-        try {
-          localStorage.setItem("voiceshiftProfiles", JSON.stringify(profiles));
-        } catch {
-          status.textContent = "This browser could not save the profile. Check its storage settings.";
-          return;
-        }
-        enterWorkspace(name);
+      const input = document.getElementById("phoneNumberInput");
+      const status = document.getElementById("phoneCallStatus");
+      const phoneNumber = input.value.trim().replace(/[^\d+]/g, "");
+      if (!/^\+[1-9]\d{6,14}$/.test(phoneNumber)) {
+        status.textContent = "Enter an international number with its country code, such as +14155550123.";
         return;
       }
-      const profile = profiles.find((savedProfile) => savedProfile.key === key);
-      if (!profile) {
-        status.textContent = "No profile with this name is saved here. Create an account first.";
-        return;
-      }
-      enterWorkspace(profile.name);
+      status.textContent = "Opening your device's phone app...";
+      window.location.href = `tel:${phoneNumber}`;
     });
-    document.getElementById("loginModeButton").addEventListener("click", () => setAuthMode("login"));
-    document.getElementById("createModeButton").addEventListener("click", () => setAuthMode("create"));
-    document.getElementById("guestLink").addEventListener("click", (event) => { event.preventDefault(); enterWorkspace(); });
     document.getElementById("realismRange").addEventListener("input", (event) => { document.getElementById("realismValue").textContent = `${event.target.value}%`; });
     if (pendingRoomId) {
       document.getElementById("createRoomButton").classList.add("hidden");
       document.getElementById("joinRoomButton").classList.remove("hidden");
-      enterWorkspace();
       setCallStatus("Invite received. Join when you are ready.");
     }
   </script>
